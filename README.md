@@ -16,6 +16,21 @@ Running:
 ./data-extract-pdf [page_num] [pdf_files ...]
 ```
 
-The program will then open up a pyplot window which you may then draw rectangles on and label with the data name. You will then be able to cycle through pdfs using enter, tab, shift, and space: enter will save the data into an active python dictionary and remove the file from the queue, space will record the files name into an "unprocessed" array and remove it from the queue, and tab and shift-tab will cycle backwards and forwards through files, allowing you to undo mistakes.
+The program will then open up a pyplot window which you may then draw rectangles on and label with the data name. 
 
-The processed and unprocessed arrays will then be written out to one of two JSON files, "processed.json" and "uprocessed.json" which you may then rename.
+### Controls:
+
+- enter: Save data into a "processed" queue from the selected rectangles
+- space: Place file into an "unprocessed" queue
+- delete: Remove last rectangle created. Click multiple times to clear all rectangles
+- shift+n: Next file
+- shift+p: Previous file
+
+Once all the files are either processed or unprocessed, press ctrl-s to save the queues and queue data, and then you may quit the program.
+
+The final result will be written to a file called "processed.json". Which is a dictionary of file names. Unprocessed file names will have the value "UNPROCESSED", while processed files will have an array of extracted strings.
+
+### Limits
+
+- Assumes all pdf names are unique.
+- Currently no pdf rotation support
