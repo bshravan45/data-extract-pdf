@@ -79,12 +79,12 @@ class PdfPlotter:
         if event.key == "P":
             self.prev_pdf()
         if event.key == "S":
-            self.save_and_exit()
+            self.save()
 
-    def save_and_exit(self):
+    def save(self):
+        print("Saving processed.json and exiting ...")
         with open("processed.json", "w") as of:
             of.write(json.dumps(self.processed))
-        pyplot.close()
 
     def prev_pdf(self):
         self.pdf_index -= 1
