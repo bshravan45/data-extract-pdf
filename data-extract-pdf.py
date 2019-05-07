@@ -34,6 +34,8 @@ class PdfPlotter:
         """
         Get PDF, render in pyplot, hook input events
         """
+        pyplot.clf()
+        print(pdf_name)
         self.pdf_name = pdf_name
         path = absolute_file_scheme_path(pdf_name)
         doc = poppler.document_new_from_file(path, None)
@@ -41,7 +43,7 @@ class PdfPlotter:
 
         try:
             self.page_width, self.page_height = page.get_size()
-        except AttributeError as e:
+        except AttributeError:
             self.pdf_names.remove(self.pdf_name)
             self.add_unprocessed()
             return
@@ -161,7 +163,12 @@ class PdfPlotter:
 
 if __name__ == "__main__":
     page_num = int(sys.argv[1])
-    pdf_names = sys.argv[2:]
+    file_name_list = sys.argv[2]
+    pdf_names = []
+
+    with open(file_name_list) as fd:
+        for line in fd:
+            pdf_names.append(line.strip())
 
     pdf_plotter = PdfPlotter(pdf_names, page_num)
     pyplot.show()

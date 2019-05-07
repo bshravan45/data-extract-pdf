@@ -23,7 +23,7 @@ done
 Then 
 
 ```
-./data-extract-pdf [page_num] [OCR'ed pdf_files ...]
+./data-extract-pdf [page_num] [file containing newline delimited relative/absolute paths to pdf files]
 ```
 
 The program will then open up a pyplot window which you may then draw rectangles on and label with the data name. 
