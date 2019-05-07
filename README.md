@@ -12,12 +12,17 @@ sudo apt install python-cairo python-poppler python-matplotlib poppler-utils ocr
 
 Running:
 
-First, run ocrmypdf on all the pdf files you want to process if you have not already! i.e. 
+First, run ocrmypdf on all the pdf files you want to process if you have not already! i.e. (4 process batch processing.)
 
 ```
-for filename in *.pdf; do
-ocrmypdf $filename $filename
+N=4
+(
+for filename in *.pdf; do 
+  ((i=i%N)); ((i++==0)) && wait
+  echo $filename 
+  ocrmypdf -c -f --rotate-pages -l eng $filename $filename &
 done
+)
 ```
 
 Then 
@@ -39,7 +44,7 @@ The program will then open up a pyplot window which you may then draw rectangles
 - shift-f: Move to next page in this PDF file
 - shift-b: Move to previous page in this PDF file
 - shift-s: Save processed json
-- [number keys 0-9]: Switch which rectangle extraction template is being used; useful for defining templates for multiple 
+- [0-9]: Switch which rectangle extraction template is being used; useful for defining templates for multiple 
   document types with different layouts at once
 
 Once all the files are either processed or unprocessed, press ctrl-s to save the queues and queue data, and then you may quit the program.
@@ -53,7 +58,6 @@ You may quit using ctrl-c on the terminal.
 ### Limits
 
 - Assumes all pdf names are unique.
-- Currently no pdf rotation support
 - Currently extracts text from one page at a time
 
 ### Video
