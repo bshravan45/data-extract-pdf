@@ -7,6 +7,7 @@ import poppler
 import os
 import sys
 import numpy as np
+import yaml
 
 
 def absolute_file_scheme_path(fname):
@@ -64,8 +65,9 @@ class PdfPlotter:
 
 
 if __name__ == "__main__":
-    pdf_name = sys.argv[1]
-    page_num = int(sys.argv[2])
+    page_num = int(sys.argv[1])
+    pdf_names = sys.argv[2:]
 
     pdf_plotter = PdfPlotter()
-    pdf_plotter.showPdf(pdf_name, page_num)
+    for pdf_name in pdf_names:
+        pdf_plotter.showPdf(pdf_name, page_num)
