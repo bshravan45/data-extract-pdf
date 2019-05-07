@@ -19,26 +19,44 @@ def absolute_file_scheme_path(fname):
 
 
 class PdfPlotter:
-    def __init__(self, pdf_names, page_num):
+    def __init__(self, pdf_names):
         self.points = []
-        self.rects = []
+        self.rectangle_templates = {
+            '1': [],
+            '2': [],
+            '3': [],
+            '4': [],
+            '5': [],
+            '6': [],
+            '7': [],
+            '8': [],
+            '9': [],
+            '0': []
+        }
+        self.rects = self.rectangle_templates['1']
         self.processed = {}
         self.pdf_index = -1
         self.pdf_names = pdf_names
-        self.page_num = page_num
+        self.num_pages = -1
+        self.page_num = 0
         pyplot.connect("button_press_event", self.click)
         pyplot.connect("key_press_event", self.key_press)
         self.next_pdf()
 
-    def show_pdf(self, pdf_name):
+    def show_pdf(self):
         """
         Get PDF, render in pyplot, hook input events
         """
         pyplot.clf()
-        print(pdf_name)
-        self.pdf_name = pdf_name
-        path = absolute_file_scheme_path(pdf_name)
+        self.pdf_name = self.pdf_names[self.pdf_index]
+        path = absolute_file_scheme_path(self.pdf_name)
         doc = poppler.document_new_from_file(path, None)
+        self.num_pages = doc.get_n_pages()
+
+        # Handle edge condition of moving to new pdf with fewer pages
+        if self.page_num > self.num_pages:
+            self.page_num = 0
+
         page = doc.get_page(self.page_num)
 
         try:
@@ -62,7 +80,9 @@ class PdfPlotter:
         image_matrix = image_matrix.reshape((self.page_height, self.page_width, 4))
 
         pyplot.imshow(image_matrix)
+        self.render_rects()
         pyplot.draw()
+
 
     def add_unprocessed(self):
         print("Adding unprocessed: " + self.pdf_name)
@@ -70,11 +90,12 @@ class PdfPlotter:
         self.next_pdf()
 
     def key_press(self, event):
+        print(event.key)
         if event.key == "enter":
             self.extract_text()
         if event.key == "delete":
             self.remove_rect()
-        if event.key == " ":
+        if event.key == "backspace":
             self.add_unprocessed()
         if event.key == "N":
             self.next_pdf()
@@ -82,6 +103,18 @@ class PdfPlotter:
             self.prev_pdf()
         if event.key == "S":
             self.save()
+        if event.key == 'F':
+            self.page_num = (self.page_num + 1) % self.num_pages
+            self.show_pdf()
+        if event.key == 'B':
+            self.page_num = (self.page_num - 1) % self.num_pages
+            self.show_pdf()
+        if event.key.isdigit():
+            self.set_template(event.key)
+
+    def set_template(self, digit):
+        self.rects = self.rectangle_templates[digit]
+        self.show_pdf()
 
     def save(self):
         print("Saving processed.json and exiting ...")
@@ -91,14 +124,14 @@ class PdfPlotter:
     def prev_pdf(self):
         self.pdf_index -= 1
         self.pdf_index %= len(self.pdf_names)
-        self.show_pdf(self.pdf_names[self.pdf_index])
+        self.show_pdf()
 
     def next_pdf(self):
         proc_cnt = (len(self.processed), len(self.pdf_names))
         print("Number Processed: %d / %d" % proc_cnt)
         self.pdf_index += 1
         self.pdf_index %= len(self.pdf_names)
-        self.show_pdf(self.pdf_names[self.pdf_index])
+        self.show_pdf()
 
     def click(self, event):
         if event.button == 1 and event.inaxes:
@@ -106,6 +139,25 @@ class PdfPlotter:
             if len(self.points) == 2:
                 self.draw_rect(self.points)
                 self.points = []
+
+    def render_rects(self):
+        """
+        This method creates a new set of rectangles for a new pyplot figure.
+        We overwrite the elements of the old list without discarding them,
+        since the artist and axes object was cleared by the call to clf in
+        the pdf render func.
+        """
+        for i, rect in enumerate(self.rects):
+            newRect = patches.Rectangle(
+                rect.get_xy(),
+                width=rect.get_width(),
+                height=rect.get_height(),
+                linewidth=1,
+                edgecolor="r",
+                facecolor="none",
+            )
+            pyplot.gca().add_patch(newRect)
+            self.rects[i] = newRect
 
     def draw_rect(self, pts):
         rect = patches.Rectangle(
@@ -162,13 +214,12 @@ class PdfPlotter:
 
 
 if __name__ == "__main__":
-    page_num = int(sys.argv[1])
-    file_name_list = sys.argv[2]
+    file_name_list = sys.argv[1]
     pdf_names = []
 
     with open(file_name_list) as fd:
         for line in fd:
             pdf_names.append(line.strip())
 
-    pdf_plotter = PdfPlotter(pdf_names, page_num)
+    pdf_plotter = PdfPlotter(pdf_names)
     pyplot.show()

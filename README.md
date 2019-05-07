@@ -23,26 +23,30 @@ done
 Then 
 
 ```
-./data-extract-pdf [page_num] [file containing newline delimited relative/absolute paths to pdf files]
+./data-extract-pdf [file containing newline delimited relative/absolute paths to pdf files]
 ```
 
 The program will then open up a pyplot window which you may then draw rectangles on and label with the data name. 
 
 ### Controls:
 
-- click: click twice to draw rectangles on the image and select the text areas that you would like to extract
+- click: Click twice to draw rectangles on the image and select the text areas that you would like to extract
 - enter: Save data into a "processed" queue from the selected rectangles
-- space: Place file into an "unprocessed" queue
+- backspace: Place file into an "unprocessed" queue
 - delete: Remove last rectangle created. Click multiple times to clear all rectangles
-- shift+n: Next file
-- shift+p: Previous file
-- shift+s: Save processed json
+- shift-n: Next file
+- shift-p: Previous file
+- shift-f: Move to next page in this PDF file
+- shift-b: Move to previous page in this PDF file
+- shift-s: Save processed json
+- [number keys 0-9]: Switch which rectangle extraction template is being used; useful for defining templates for multiple 
+  document types with different layouts at once
 
 Once all the files are either processed or unprocessed, press ctrl-s to save the queues and queue data, and then you may quit the program.
 
 The final result will be written to a file called "processed.json". Which is a dictionary of file names. Unprocessed file names will have the value "UNPROCESSED", while processed files will have an array of extracted strings.
 
-Each rectangle will extract to a separate element of the array. Hitting enter on a document which has already been processed will reprocess that document.
+Each rectangle will extract to a separate element of the array. Hitting enter on a document which has already been processed will reprocess that document. Rectangles extract text from the current page. 
 
 You may quit using ctrl-c on the terminal.
 
@@ -50,6 +54,7 @@ You may quit using ctrl-c on the terminal.
 
 - Assumes all pdf names are unique.
 - Currently no pdf rotation support
+- Currently extracts text from one page at a time
 
 ### Video
 
