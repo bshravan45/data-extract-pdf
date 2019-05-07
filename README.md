@@ -7,13 +7,23 @@ Useful, minimal python script for extracting text/data from PDFs via OCR for dat
 You will need to install the following.
 
 ```
-sudo apt install python-cairo python-poppler python-matplotlib poppler-utils
+sudo apt install python-cairo python-poppler python-matplotlib poppler-utils ocrmypdf
 ```
 
 Running:
 
+First, run ocrmypdf on all the pdf files you want to process if you have not already! i.e. 
+
 ```
-./data-extract-pdf [page_num] [pdf_files ...]
+for filename in *.pdf; do
+ocrmypdf $filename $filename
+done
+```
+
+Then 
+
+```
+./data-extract-pdf [page_num] [OCR'ed pdf_files ...]
 ```
 
 The program will then open up a pyplot window which you may then draw rectangles on and label with the data name. 
