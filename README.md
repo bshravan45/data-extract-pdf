@@ -7,22 +7,16 @@ Useful, minimal python script for extracting text/data from PDFs via OCR for dat
 You will need to install the following.
 
 ```
-sudo apt install python-cairo python-poppler python-matplotlib poppler-utils ocrmypdf
+sudo apt install python-cairo python-poppler python-matplotlib poppler-utils ocrmypdf parallel
 ```
 
 Running:
 
-First, run ocrmypdf on all the pdf files you want to process if you have not already! i.e. (4 process batch processing.)
+First, run ocrmypdf on all the pdf files you want to process if you have not already! (Uses GNU parallel)
 
 ```
-N=4
-(
-for filename in *.pdf; do 
-  ((i=i%N)); ((i++==0)) && wait
-  echo $filename 
-  ocrmypdf -c -f --rotate-pages -l eng $filename $filename &
-done
-)
+#!/bin/bash
+parallel --tag ocrmypdf -c -f --rotate-pages -l eng '{}' 'output/{}' ::: *.pdf
 ```
 
 Then 
